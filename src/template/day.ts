@@ -1,5 +1,5 @@
 import { readInput, timeIt } from "../common.ts";
-import { Solution } from "../types.ts";
+import { type Solution } from "../types.ts";
 
 const year = new Date().getFullYear();
 const day = 1;

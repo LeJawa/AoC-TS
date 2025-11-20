@@ -40,5 +40,9 @@ export function readInput(day: number, year: number): string[] {
     "inputs",
     `day${day.toString().padStart(2, "0")}.txt`
   );
-  return fs.readFileSync(file, "utf-8").split(/\r?\n/);
+  return fs
+    .readFileSync(file, "utf-8")
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => line !== "");
 }
