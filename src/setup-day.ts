@@ -11,27 +11,34 @@ const __dirname = path.dirname(__filename);
 
 // const year = new Date().getFullYear();
 const year = 2018;
-const [, , dayArg, yearArg, openFlag] = process.argv;
-if (!dayArg) {
-  console.error("Usage: ts-node src/setup-day.ts <day> [year] [--open]");
-  process.exit(1);
-}
-const day = parseInt(dayArg, 10);
-const y = yearArg && !yearArg.startsWith("--") ? parseInt(yearArg, 10) : year;
-const shouldOpen = openFlag === "--open" || yearArg === "--open";
 
-const inputPath = path.join(
-  __dirname,
-  "..",
-  "inputs",
-  `day${day.toString().padStart(2, "0")}.txt`
-);
-const dayFile = path.join(
-  __dirname,
-  "days",
-  `day${day.toString().padStart(2, "0")}.ts`
-);
+const [, , dayArg, yearArg, openFlag] = process.argv;
+const isAll = dayArg === "--all";
+const y =
+  yearArg && !yearArg.startsWith("--") && !isAll ? parseInt(yearArg, 10) : year;
+const shouldOpen = openFlag === "--open" || yearArg === "--open";
 const templatePath = path.join(__dirname, "template", "day.ts");
+
+function getInputPath(day: number) {
+  return path.join(
+    __dirname,
+    "..",
+    "inputs",
+    `day${day.toString().padStart(2, "0")}.txt`
+  );
+}
+function getDayFile(day: number) {
+  return path.join(
+    __dirname,
+    "days",
+    `day${day.toString().padStart(2, "0")}.ts`
+  );
+}
+
+if (!dayArg) {
+  console.error("Usage: ts-node src/setup-day.ts <day>|--all [year] [--open]");
+  process.exit(0);
+}
 
 export async function downloadInput(
   day: number,
@@ -49,13 +56,15 @@ export async function downloadInput(
   fs.writeFileSync(dest, text);
 }
 
-(async () => {
+async function setupDay(day: number, y: number, shouldOpen: boolean) {
+  const inputPath = getInputPath(day);
+  const dayFile = getDayFile(day);
   // Download input (always re-download)
   try {
     await downloadInput(day, y, inputPath);
     console.log(`Downloaded input for day ${day} (${y})`);
   } catch (e) {
-    console.error("Failed to download input:", e);
+    console.error(`Failed to download input for day ${day}:`, e);
   }
   // Create solution file if not exists
   if (!fs.existsSync(dayFile)) {
@@ -73,5 +82,17 @@ export async function downloadInput(
     const url = `https://adventofcode.com/${y}/day/${day}`;
     await open(url, { wait: true });
     console.log(`Opened ${url}`);
+  }
+}
+
+(async () => {
+  if (isAll) {
+    for (let d = 1; d <= 25; d++) {
+      await setupDay(d, y, false);
+    }
+    console.log("Setup complete for all days.");
+  } else {
+    const day = parseInt(dayArg, 10);
+    await setupDay(day, y, shouldOpen);
   }
 })();
