@@ -7,7 +7,8 @@ import open from "open";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const year = new Date().getFullYear();
+// const year = new Date().getFullYear();
+const year = 2018;
 const [, , dayArg, yearArg, openFlag] = process.argv;
 if (!dayArg) {
   console.error("Usage: ts-node src/setup-day.ts <day> [year] [--open]");
