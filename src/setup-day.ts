@@ -1,8 +1,10 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { downloadInput } from "./common.ts";
+import fetch from "node-fetch";
+import dotenv from "dotenv";
 import open from "open";
+dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -30,6 +32,22 @@ const dayFile = path.join(
   `day${day.toString().padStart(2, "0")}.ts`
 );
 const templatePath = path.join(__dirname, "template", "day.ts");
+
+export async function downloadInput(
+  day: number,
+  year: number,
+  dest: string
+): Promise<void> {
+  const session = process.env.AOC_SESSION;
+  if (!session) throw new Error("AOC_SESSION not set in .env");
+  const url = `https://adventofcode.com/${year}/day/${day}/input`;
+  const res = await fetch(url, {
+    headers: { Cookie: `session=${session}` },
+  });
+  if (!res.ok) throw new Error(`Failed to fetch input: ${res.status}`);
+  const text = await res.text();
+  fs.writeFileSync(dest, text);
+}
 
 (async () => {
   // Download input (always re-download)
