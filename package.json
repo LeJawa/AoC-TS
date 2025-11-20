@@ -1,0 +1,20 @@
+{
+  "name": "aoc-typescript-framework",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "src/runner.ts",
+  "scripts": {
+    "setup-day": "ts-node src/setup-day.ts",
+    "run": "ts-node src/runner.ts"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "node-fetch": "^3.3.2",
+    "open": "^11.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}
