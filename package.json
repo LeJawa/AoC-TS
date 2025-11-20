@@ -5,7 +5,7 @@
   "main": "src/runner.ts",
   "scripts": {
     "setup-day": "ts-node src/setup-day.ts",
-    "run": "ts-node src/runner.ts"
+    "start": "ts-node src/runner.ts"
   },
   "dependencies": {
     "dotenv": "^17.2.3",
