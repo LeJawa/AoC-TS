@@ -21,14 +21,14 @@ function part2(input: typeof dayInput): Solution {
   return null;
 }
 
-const { result: dayInput, time: timeSetup } = timeIt(() => setup(lines));
+const { result: dayInput, time: timeSetup } = await timeIt(() => setup(lines));
 
-export function main() {
+export async function main() {
   console.log(`Day ${day} - Setup (${timeSetup})`);
 
-  const { result: answer1, time: time1 } = timeIt(() => part1(dayInput));
+  const { result: answer1, time: time1 } = await timeIt(() => part1(dayInput));
   console.log(`Day ${day} - Part 1:`, answer1, `(${time1})`);
 
-  const { result: answer2, time: time2 } = timeIt(() => part2(dayInput));
+  const { result: answer2, time: time2 } = await timeIt(() => part2(dayInput));
   console.log(`Day ${day} - Part 2:`, answer2, `(${time2})`);
 }

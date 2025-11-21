@@ -5,9 +5,19 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export function timeIt<T>(fn: () => T): { result: T; time: string } {
+export async function timeIt<T>(fn: () => T | Promise<T>): Promise<{ result: T; time: string }> {
   const start = process.hrtime.bigint();
-  const result = fn();
+  let result: T;
+  if (fn.constructor.name === 'AsyncFunction') {
+    result = await (fn() as Promise<T>);
+  } else {
+    const maybePromise = fn();
+    if (maybePromise instanceof Promise) {
+      result = await maybePromise;
+    } else {
+      result = maybePromise;
+    }
+  }
   const end = process.hrtime.bigint();
   const ms = Number(end - start) / 1e6;
   const time = ms < 1000 ? `${ms.toFixed(2)}ms` : `${(ms / 1000).toFixed(2)}s`;

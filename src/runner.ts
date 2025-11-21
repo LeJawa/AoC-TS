@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { timeIt } from "./common.ts";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -46,10 +47,15 @@ async function runDay(day: number) {
 async function main() {
   if (arg === "--all") {
     const files = getDayFiles();
-    for (const f of files) {
-      const day = parseInt(f.match(/\d{2}/)![0], 10);
-      await runDay(day);
-    }
+
+    const { time } = await timeIt(async () => {
+      for (const f of files) {
+        const day = parseInt(f.match(/\d{2}/)![0], 10);
+        await runDay(day);
+      }
+    });
+
+    console.log(`\nTotal time: ${time}`);
   } else if (/^\d{1,2}$/.test(arg)) {
     await runDay(parseInt(arg, 10));
   } else if (/^\d{4}$/.test(arg)) {
