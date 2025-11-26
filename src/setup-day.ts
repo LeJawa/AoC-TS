@@ -9,8 +9,7 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// const year = new Date().getFullYear();
-const year = 2018;
+const year = new Date().getFullYear();
 
 const [, , dayArg, yearArg, openFlag] = process.argv;
 const isAll = dayArg === "--all";
@@ -19,18 +18,19 @@ const y =
 const shouldOpen = openFlag === "--open" || yearArg === "--open";
 const templatePath = path.join(__dirname, "template", "day.ts");
 
-function getInputPath(day: number) {
+function getInputPath(day: number, year: number) {
   return path.join(
     __dirname,
     "..",
     "inputs",
+    year.toString(),
     `day${day.toString().padStart(2, "0")}.txt`
   );
 }
-function getDayFile(day: number) {
+function getDayFile(day: number, year: number) {
   return path.join(
     __dirname,
-    "days",
+    year.toString(),
     `day${day.toString().padStart(2, "0")}.ts`
   );
 }
@@ -51,14 +51,20 @@ export async function downloadInput(
   const res = await fetch(url, {
     headers: { Cookie: `session=${session}` },
   });
-  if (!res.ok) throw new Error(`Failed to fetch input: ${res.status}`);
+  if (!res.ok) {
+    if (!fs.existsSync(dest)) {
+      fs.writeFileSync(dest, "");
+      console.log(`Writing empty input file for day ${day} (${y})`);
+    }
+    throw new Error(`Failed to fetch input: ${res.status}`);
+  }
   const text = await res.text();
   fs.writeFileSync(dest, text);
 }
 
 async function setupDay(day: number, y: number, shouldOpen: boolean) {
-  const inputPath = getInputPath(day);
-  const dayFile = getDayFile(day);
+  const inputPath = getInputPath(day, y);
+  const dayFile = getDayFile(day, y);
   // Download input (always re-download)
   try {
     await downloadInput(day, y, inputPath);
