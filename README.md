@@ -1,4 +1,4 @@
-# Advent of Code TypeScript Framework
+# Advent of Code TypeScript Solutions
 
 ## Setup
 
