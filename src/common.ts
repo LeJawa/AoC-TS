@@ -1,9 +1,5 @@
 import fs from "fs";
 import path from "path";
-import { fileURLToPath } from "url";
-
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = path.dirname(__filename);
 
 export async function timeIt<T>(
   fn: () => T | Promise<T>
@@ -37,6 +33,6 @@ export function readInput(day: number, year: number): string[] {
   return fs
     .readFileSync(file, "utf-8")
     .split(/\r?\n/)
-    .map((line) => line.trim())
+    .map((line) => line.trimEnd())
     .filter((line) => line !== "");
 }
