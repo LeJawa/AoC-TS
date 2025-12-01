@@ -1,27 +1,31 @@
 import fs from "fs";
 import path from "path";
-import { fileURLToPath } from "url";
-import { timeIt } from "./common.ts";
+import { timeIt } from "./common";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
+const [, , ...args] = process.argv;
 const year = new Date().getFullYear();
-const [, , arg] = process.argv;
 
-function getDayFiles() {
-  const daysDir = path.join(__dirname, "days");
+function getDayFiles(year: number) {
+  const daysDir = path.join(__dirname, `${year}`);
   return fs
     .readdirSync(daysDir)
-    .filter((f) => /^day\d{2}\.ts$/.test(f))
+    .filter((f) => /^day\d{2}\.(?:ts|js)$/.test(f))
     .sort();
 }
 
-async function runDay(day: number) {
+function getYearsAvailable() {
+  return fs
+    .readdirSync(__dirname)
+    .filter((f) => /^\d{4}$/.test(f))
+    .map((y) => parseInt(y))
+    .sort();
+}
+
+async function runDay(day: number, year: number) {
   const file = path.join(
     __dirname,
-    "days",
-    `day${day.toString().padStart(2, "0")}.ts`
+    `${year}`,
+    `day${day.toString().padStart(2, "0")}.js`
   );
   if (!fs.existsSync(file)) {
     console.log(`No solution for day ${day}`);
@@ -44,25 +48,63 @@ async function runDay(day: number) {
   }
 }
 
-async function main() {
-  if (arg === "--all") {
-    const files = getDayFiles();
+const printUsage = () => {
+  console.log("Usage: pnpm start <day> <year>| <year> | --all");
+};
+
+async function main(...args: string[]) {
+  if (args.length > 2) {
+    printUsage();
+    return;
+  }
+
+  const day = /^\d{1,2}$/.test(args[0])
+    ? parseInt(args[0])
+    : /^\d{1,2}$/.test(args[1])
+    ? parseInt(args[1])
+    : undefined;
+
+  const year = /^\d{4}$/.test(args[0])
+    ? parseInt(args[0])
+    : /^\d{4}$/.test(args[1])
+    ? parseInt(args[1])
+    : undefined;
+
+  const isAll = args[0] === "--all";
+
+  if (isAll) {
+    const years = getYearsAvailable();
 
     const { time } = await timeIt(async () => {
-      for (const f of files) {
-        const day = parseInt(f.match(/\d{2}/)![0], 10);
-        await runDay(day);
+      for (const y of years) {
+        console.log(`${y}`);
+        const files = getDayFiles(y);
+        for (const f of files) {
+          const day = parseInt(f.match(/\d{2}/)![0]);
+          await runDay(day, y);
+        }
+        console.log("============================");
       }
     });
 
     console.log(`\nTotal time: ${time}`);
-  } else if (/^\d{1,2}$/.test(arg)) {
-    await runDay(parseInt(arg, 10));
-  } else if (/^\d{4}$/.test(arg)) {
-    console.log("Year support not implemented yet.");
+  } else if (!!year && !day) {
+    const files = getDayFiles(year);
+
+    const { time } = await timeIt(async () => {
+      for (const f of files) {
+        const day = parseInt(f.match(/\d{2}/)![0]);
+        await runDay(day, year);
+      }
+    });
+
+    console.log(`\nTotal time: ${time}`);
+  } else if (!!year && !!day) {
+    await runDay(day, year);
   } else {
-    console.log("Usage: ts-node src/runner.ts <day>|<year>|--all");
+    printUsage();
+    return;
   }
 }
 
-main();
+main(...args);

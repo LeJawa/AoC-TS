@@ -1,34 +1,37 @@
-import { readInput, timeIt } from "../common.ts";
-import { type Solution } from "../types.ts";
+import { readInput, timeIt } from "../common";
+import { type Solution } from "../types";
 
 const year = new Date().getFullYear();
 const day = 1;
 const lines = readInput(day, year);
 
+type DayInputType = string[];
+
 // Returns the manipulated input lines
-function setup(lines: string[]): any {
+function setup(lines: string[]): DayInputType {
   // TODO: Implement setup
-  return null;
+  return [];
 }
 
-function part1(input: typeof dayInput): Solution {
+function part1(input: DayInputType): Solution {
   // TODO: Implement Part 1
   return null;
 }
 
-function part2(input: typeof dayInput): Solution {
+function part2(input: DayInputType): Solution {
   // TODO: Implement Part 2
   return null;
 }
 
-const { result: dayInput, time: timeSetup } = await timeIt(() => setup(lines));
-
 export async function main() {
-  console.log(`Day ${day} - Setup (${timeSetup})`);
+  console.log(`Day ${day}:`);
+
+  const { result: dayInput, time: time0 } = await timeIt(() => setup(lines));
+  console.log(` > Setup (${time0})`);
 
   const { result: answer1, time: time1 } = await timeIt(() => part1(dayInput));
-  console.log(`Day ${day} - Part 1:`, answer1, `(${time1})`);
+  console.log(` > Part 1:`, answer1, `(${time1})`);
 
   const { result: answer2, time: time2 } = await timeIt(() => part2(dayInput));
-  console.log(`Day ${day} - Part 2:`, answer2, `(${time2})`);
+  console.log(` > Part 2:`, answer2, `(${time2})`);
 }
