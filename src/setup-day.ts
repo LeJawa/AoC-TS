@@ -1,43 +1,28 @@
 import fs from "fs";
 import path from "path";
-import { fileURLToPath } from "url";
-import fetch from "node-fetch";
 import dotenv from "dotenv";
-import open from "open";
 dotenv.config();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const [, , ...args] = process.argv;
+const templatePath = path.join(__dirname, "..", "src", "template", "day.ts");
 
-// const year = new Date().getFullYear();
-const year = 2018;
-
-const [, , dayArg, yearArg, openFlag] = process.argv;
-const isAll = dayArg === "--all";
-const y =
-  yearArg && !yearArg.startsWith("--") && !isAll ? parseInt(yearArg, 10) : year;
-const shouldOpen = openFlag === "--open" || yearArg === "--open";
-const templatePath = path.join(__dirname, "template", "day.ts");
-
-function getInputPath(day: number) {
+function getInputPath(day: number, year: number) {
   return path.join(
     __dirname,
     "..",
     "inputs",
+    year.toString(),
     `day${day.toString().padStart(2, "0")}.txt`
   );
 }
-function getDayFile(day: number) {
+function getDayFile(day: number, year: number) {
   return path.join(
-    __dirname,
-    "days",
+    __dirname, // __dirname is ./dist directory
+    "..",
+    "src",
+    year.toString(),
     `day${day.toString().padStart(2, "0")}.ts`
   );
-}
-
-if (!dayArg) {
-  console.error("Usage: ts-node src/setup-day.ts <day>|--all [year] [--open]");
-  process.exit(0);
 }
 
 export async function downloadInput(
@@ -45,33 +30,56 @@ export async function downloadInput(
   year: number,
   dest: string
 ): Promise<void> {
+  const { default: fetch } = await import("node-fetch");
   const session = process.env.AOC_SESSION;
-  if (!session) throw new Error("AOC_SESSION not set in .env");
+  if (!session) {
+    if (!fs.existsSync(dest)) {
+      fs.mkdirSync(path.dirname(dest), { recursive: true });
+      fs.writeFileSync(dest, "");
+      console.log(`Writing empty input file for day ${day} (${year})`);
+    }
+    throw new Error("AOC_SESSION not set in .env");
+  }
   const url = `https://adventofcode.com/${year}/day/${day}/input`;
   const res = await fetch(url, {
     headers: { Cookie: `session=${session}` },
   });
-  if (!res.ok) throw new Error(`Failed to fetch input: ${res.status}`);
+  if (!res.ok) {
+    if (!fs.existsSync(dest)) {
+      fs.mkdirSync(path.dirname(dest), { recursive: true });
+      fs.writeFileSync(dest, "");
+      console.log(`Writing empty input file for day ${day} (${year})`);
+    }
+    throw new Error(`Failed to fetch input: ${res.status}`);
+  }
   const text = await res.text();
+  fs.mkdirSync(path.dirname(dest), { recursive: true });
   fs.writeFileSync(dest, text);
 }
 
-async function setupDay(day: number, y: number, shouldOpen: boolean) {
-  const inputPath = getInputPath(day);
-  const dayFile = getDayFile(day);
+async function setupDay(day: number, year: number, shouldOpen: boolean) {
+  const inputPath = getInputPath(day, year);
+  const dayFile = getDayFile(day, year);
   // Download input (always re-download)
   try {
-    await downloadInput(day, y, inputPath);
-    console.log(`Downloaded input for day ${day} (${y})`);
+    await downloadInput(day, year, inputPath);
+    console.log(`Downloaded input for day ${day} (${year})`);
   } catch (e) {
-    console.error(`Failed to download input for day ${day}:`, e);
+    console.error(
+      `Failed to download input for day ${day}:`,
+      (e as Error).message
+    );
   }
   // Create solution file if not exists
   if (!fs.existsSync(dayFile)) {
     let template = fs.readFileSync(templatePath, "utf-8");
     template = template
       .replace("const day = 1;", `const day = ${day};`)
-      .replace("const year = new Date().getFullYear();", `const year = ${y};`);
+      .replace(
+        "const year = new Date().getFullYear();",
+        `const year = ${year};`
+      );
+    fs.mkdirSync(path.dirname(dayFile), { recursive: true });
     fs.writeFileSync(dayFile, template);
     console.log(`Created ${dayFile}`);
   } else {
@@ -79,20 +87,51 @@ async function setupDay(day: number, y: number, shouldOpen: boolean) {
   }
   // Optionally open problem in browser
   if (shouldOpen) {
-    const url = `https://adventofcode.com/${y}/day/${day}`;
+    const { default: open } = await import("open");
+    const url = `https://adventofcode.com/${year}/day/${day}`;
     await open(url, { wait: true });
     console.log(`Opened ${url}`);
   }
 }
 
-(async () => {
+const printUsage = () => {
+  console.log("Usage: pnpm run setup-day <year> <day> [--open]");
+  console.log("       pnpm run setup-day <year> --all");
+};
+
+async function main(...args: string[]) {
+  if (args.length > 3) {
+    printUsage();
+    return;
+  }
+
+  const year = /^\d{4}$/.test(args[0])
+    ? parseInt(args[0])
+    : /^\d{4}$/.test(args[1])
+    ? parseInt(args[1])
+    : undefined;
+
+  const day = /^\d{1,2}$/.test(args[1])
+    ? parseInt(args[1])
+    : /^\d{1,2}$/.test(args[0])
+    ? parseInt(args[0])
+    : undefined;
+
+  const isAll = !!year && args[1] === "--all" && args[2] === undefined;
+
+  const openPage = !!year && !!day && args[2] == "--open";
+
   if (isAll) {
     for (let d = 1; d <= 25; d++) {
-      await setupDay(d, y, false);
+      await setupDay(d, year, false);
     }
     console.log("Setup complete for all days.");
+  } else if (!!year && !!day) {
+    await setupDay(day, year, openPage);
   } else {
-    const day = parseInt(dayArg, 10);
-    await setupDay(day, y, shouldOpen);
+    printUsage();
+    return;
   }
-})();
+}
+
+main(...args);

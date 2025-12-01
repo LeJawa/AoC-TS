@@ -1,11 +1,11 @@
 {
   "name": "aoc-typescript-framework",
   "version": "1.0.0",
-  "type": "module",
   "main": "src/runner.ts",
   "scripts": {
-    "setup-day": "ts-node src/setup-day.ts",
-    "start": "ts-node src/runner.ts"
+    "setup-day": "tsc && node dist/setup-day.js",
+    "start": "tsc && node dist/runner.js",
+    "build": "tsc"
   },
   "dependencies": {
     "dotenv": "^17.2.3",
