@@ -11,7 +11,7 @@
       "program": "${workspaceFolder}/dist/runner.js",
       "preLaunchTask": "tsc: build",
       "outFiles": ["${workspaceFolder}/dist/**/*.js"],
-      "args": ["1", "2018"]
+      "args": ["1", "2025"]
     }
   ]
 }

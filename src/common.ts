@@ -31,6 +31,7 @@ export function readInput(day: number, year: number): string[] {
     __dirname,
     "..",
     "inputs",
+    year.toString(),
     `day${day.toString().padStart(2, "0")}.txt`
   );
   return fs
