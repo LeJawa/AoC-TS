@@ -1,4 +1,5 @@
 import { readInput, timeIt } from "../common";
+import { max, min } from "../lib/math";
 import { type Solution } from "../types";
 
 const year = 2025;
@@ -16,22 +17,35 @@ function setup(lines: string[]): DayInputType {
 }
 
 function part1(ranges: DayInputType): Solution {
+  const factorMap: { [length: number]: number } = {
+    2: 11,
+    4: 101,
+    6: 1001,
+    8: 10001,
+    10: 100001,
+  };
+
   let invalidIdSum = 0;
 
   for (const range of ranges) {
     if (range[0].length === range[1].length && range[0].length % 2 === 1)
       continue;
 
-    const r0 = parseInt(range[0]);
-    const r1 = parseInt(range[1]);
-    for (let i = r0; i <= r1; i++) {
-      const s = i.toString();
-      if (s.length % 2 === 1) continue;
+    let r0: number;
+    if (range[0].length % 2 === 1) r0 = Math.pow(10, range[0].length);
+    else r0 = parseInt(range[0]);
 
-      const s1 = s.slice(0, s.length / 2);
-      const s2 = s.slice(s.length / 2);
+    let r1: number;
+    if (range[1].length % 2 === 1) r1 = Math.pow(10, range[1].length - 1) - 1;
+    else r1 = parseInt(range[1]);
 
-      if (s1 === s2) invalidIdSum += i;
+    const factor = factorMap[r0.toString().length];
+    let seed = Math.ceil(r0 / factor);
+    let nextNumber = seed * factor;
+    while (nextNumber <= r1) {
+      invalidIdSum += nextNumber;
+      seed++;
+      nextNumber = seed * factor;
     }
   }
 
@@ -39,17 +53,79 @@ function part1(ranges: DayInputType): Solution {
 }
 
 function part2(ranges: DayInputType): Solution {
+  const factorMap: { [length: number]: number[] } = {
+    1: [],
+    2: [11],
+    3: [111],
+    4: [101],
+    5: [11111],
+    6: [1001, 10101],
+    7: [1111111],
+    8: [10001],
+    9: [111111111, 1001001],
+    10: [100001, 101010101],
+  };
   let invalidIdSum = 0;
 
   for (const range of ranges) {
-    const r0 = parseInt(range[0]);
-    const r1 = parseInt(range[1]);
-    for (let i = r0; i <= r1; i++) {
-      const s = i.toString();
-      if (/^(\d+)\1+$/.test(s)) invalidIdSum += i;
-    }
-  }
+    const range0 = parseInt(range[0]);
+    const range1 = parseInt(range[1]);
 
+    const numbersToSkip: number[] = [];
+
+    let r0: number;
+    if (range[0].length % 2 === 1 && range[1].length > range[0].length) {
+      // Handle numbers until r0
+      const factor = factorMap[range[0].length][0];
+      r0 = min(Math.pow(10, range[0].length), range1);
+      if (factor !== undefined) {
+        // not 1 digit case
+        let seed = Math.ceil(range0 / factor);
+        let nextNumber = seed * factor;
+        while (nextNumber <= r0) {
+          invalidIdSum += nextNumber;
+          numbersToSkip.push(nextNumber);
+          seed++;
+          nextNumber = seed * factor;
+        }
+      }
+    } else r0 = parseInt(range[0]);
+
+    let r1: number;
+    if (range[1].length % 2 === 1 && range[1].length > range[0].length) {
+      // Handle numbers from r1 until range1
+      const factor = factorMap[range[1].length][0];
+      r1 = max(Math.pow(10, range[1].length - 1) - 1, range0);
+      if (factor !== undefined) {
+        // not 1 digit case
+        let seed = Math.ceil(r1 / factor);
+        let nextNumber = seed * factor;
+        while (nextNumber <= range1) {
+          invalidIdSum += nextNumber;
+          numbersToSkip.push(nextNumber);
+          seed++;
+          nextNumber = seed * factor;
+        }
+      }
+    } else r1 = parseInt(range[1]);
+
+    let factors = factorMap[r0.toString().length];
+
+    factors.forEach((factor, i) => {
+      let seed = Math.ceil(r0 / factor);
+      let nextNumber = seed * factor;
+      while (nextNumber <= r1) {
+        if (i === 1 && nextNumber % factors[0] === 0) {
+          seed++;
+          nextNumber = seed * factor;
+          continue;
+        }
+        invalidIdSum += nextNumber;
+        seed++;
+        nextNumber = seed * factor;
+      }
+    });
+  }
   return invalidIdSum;
 }
 
