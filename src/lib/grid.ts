@@ -1,4 +1,4 @@
-export type Direction2D = "u" | "d" | "l" | "r";
-export type Direction3D = "u" | "d" | "l" | "r" | "f" | "b";
+export type Direction2D = "up" | "down" | "left" | "right";
+export type Direction3D = Direction2D | "forward" | "backward";
 
-export type CardinalDirections = "n" | "s" | "e" | "w";
+export type CardinalDirections = "north" | "south" | "east" | "west";

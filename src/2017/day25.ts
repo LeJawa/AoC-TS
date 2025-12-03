@@ -13,7 +13,7 @@ type DayInputType = {
     },
     pos: number,
     state: string
-  ) => void;
+  ) => { state: string; pos: number };
 };
 
 // Returns the manipulated input lines
@@ -59,6 +59,8 @@ function setup(lines: string[]): DayInputType {
     tape[pos] = value;
     state = nextState;
     pos += nextPos === "right" ? 1 : -1;
+
+    return { state, pos };
   };
 
   return { steps, doStep };
@@ -70,7 +72,9 @@ function part1({ steps, doStep }: DayInputType): Solution {
   let pos = 0;
 
   for (let i = 0; i < steps; i++) {
-    doStep(tape, pos, state);
+    const { state: newState, pos: newPos } = doStep(tape, pos, state);
+    state = newState;
+    pos = newPos;
   }
 
   return Object.values(tape).reduce((sum, value) => sum + value, 0 as number);

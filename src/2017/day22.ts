@@ -14,22 +14,22 @@ function setup(lines: string[]): DayInputType {
 }
 
 const turnRightMap: { [d in Direction2D]: Direction2D } = {
-  u: "r",
-  r: "d",
-  d: "l",
-  l: "u",
+  up: "right",
+  left: "up",
+  down: "left",
+  right: "down",
 };
 const turnLeftMap: { [d in Direction2D]: Direction2D } = {
-  u: "l",
-  l: "d",
-  d: "r",
-  r: "u",
+  up: "left",
+  left: "down",
+  down: "right",
+  right: "up",
 };
 const turnBackMap: { [d in Direction2D]: Direction2D } = {
-  u: "d",
-  l: "r",
-  d: "u",
-  r: "l",
+  up: "down",
+  left: "right",
+  down: "up",
+  right: "left",
 };
 
 const setupGrid = (gridArray: DayInputType) => {
@@ -51,7 +51,7 @@ function part1(gridArray: DayInputType): Solution {
   const grid = setupGrid(gridArray);
   let x = Math.floor(gridArray.length / 2);
   let y = x;
-  let direction: Direction2D = "u";
+  let direction: Direction2D = "up";
 
   for (let i = 0; i < 10000; i++) {
     if (!!grid[x] && grid[x][y] === "#") {
@@ -65,16 +65,16 @@ function part1(gridArray: DayInputType): Solution {
     }
 
     switch (direction) {
-      case "u":
+      case "up":
         y--;
         break;
-      case "d":
+      case "down":
         y++;
         break;
-      case "l":
+      case "left":
         x--;
         break;
-      case "r":
+      case "right":
         x++;
         break;
     }
@@ -87,7 +87,7 @@ function part2(gridArray: DayInputType): Solution {
   const grid = setupGrid(gridArray);
   let x = Math.floor(gridArray.length / 2);
   let y = x;
-  let direction: Direction2D = "u";
+  let direction: Direction2D = "up";
 
   for (let i = 0; i < 10000000; i++) {
     if (
@@ -110,16 +110,16 @@ function part2(gridArray: DayInputType): Solution {
     }
 
     switch (direction) {
-      case "u":
+      case "up":
         y--;
         break;
-      case "d":
+      case "down":
         y++;
         break;
-      case "l":
+      case "left":
         x--;
         break;
-      case "r":
+      case "right":
         x++;
         break;
     }

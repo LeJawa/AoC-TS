@@ -23,70 +23,70 @@ const runPath = (x0: number, grid: string[]) => {
   let y = 1;
   let steps = 1;
 
-  let direction: Direction2D = "d";
+  let direction: Direction2D = "down";
 
   while (true) {
     const char = grid[y][x];
     if (char === " ") break;
 
     switch (direction) {
-      case "d":
+      case "down":
         if (char !== "+") {
           if (char !== "|" && char !== "-") path.push(char);
         } else {
           if (grid[y][x - 1] === " ") {
-            direction = "r";
+            direction = "right";
           } else {
-            direction = "l";
+            direction = "left";
           }
         }
         break;
-      case "u":
+      case "up":
         if (char !== "+") {
           if (char !== "|" && char !== "-") path.push(char);
         } else {
           if (grid[y][x - 1] === " ") {
-            direction = "r";
+            direction = "right";
           } else {
-            direction = "l";
+            direction = "left";
           }
         }
         break;
-      case "l":
+      case "left":
         if (char !== "+") {
           if (char !== "|" && char !== "-") path.push(char);
         } else {
           if (grid[y - 1][x] === " ") {
-            direction = "d";
+            direction = "down";
           } else {
-            direction = "u";
+            direction = "up";
           }
         }
         break;
-      case "r":
+      case "right":
         if (char !== "+") {
           if (char !== "|" && char !== "-") path.push(char);
         } else {
           if (grid[y - 1][x] === " ") {
-            direction = "d";
+            direction = "down";
           } else {
-            direction = "u";
+            direction = "up";
           }
         }
         break;
     }
 
     switch (direction) {
-      case "d":
+      case "down":
         y++;
         break;
-      case "u":
+      case "up":
         y--;
         break;
-      case "l":
+      case "left":
         x--;
         break;
-      case "r":
+      case "right":
         x++;
         break;
     }
