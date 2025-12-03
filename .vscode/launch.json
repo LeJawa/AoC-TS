@@ -7,11 +7,19 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Debug runner",
+      "name": "Build & Debug runner",
       "program": "${workspaceFolder}/dist/runner.js",
       "preLaunchTask": "tsc: build",
       "outFiles": ["${workspaceFolder}/dist/**/*.js"],
-      "args": ["1", "2025"]
+      "args": ["3", "2025"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug runner",
+      "program": "${workspaceFolder}/dist/runner.js",
+      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+      "args": ["3", "2025"]
     }
   ]
 }
