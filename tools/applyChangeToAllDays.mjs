@@ -6,8 +6,23 @@ const addAtTheEnd = (content, toAdd) => {
   else return content + toAdd;
 };
 
+const changeLine = (content, prevLine, nextLine) => {
+  return content.replace(prevLine, nextLine);
+};
+
 const applyChangeToContent = (originalFileContent) => {
-  return addAtTheEnd(originalFileContent, "\nexport { part1, part2 };\n");
+  let newContent = originalFileContent;
+  newContent = addAtTheEnd(
+    originalFileContent,
+    "\nexport { setup, part1, part2 };\n"
+  );
+  // newContent = changeLine(
+  //   newContent,
+  //   "export { part1, part2 };",
+  //   "export { setup, part1, part2 };"
+  // );
+
+  return newContent;
 };
 
 const srcDir = "./src";

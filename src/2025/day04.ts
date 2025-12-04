@@ -40,9 +40,11 @@ function part1(map: DayInputType): Solution {
   return freeRolls;
 }
 
-function part2(map: DayInputType): Solution {
+function part2(originalMap: DayInputType): Solution {
   let freeRolls = 0;
   let removedRolls = true;
+
+  const map = structuredClone(originalMap);
 
   while (removedRolls) {
     removedRolls = false;
@@ -88,3 +90,5 @@ export async function main() {
   const { result: answer2, time: time2 } = await timeIt(() => part2(dayInput));
   console.log(` > Part 2:`, answer2, `(${time2})`);
 }
+
+export { setup, part1, part2 };
