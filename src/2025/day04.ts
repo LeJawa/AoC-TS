@@ -5,43 +5,35 @@ const year = 2025;
 const day = 4;
 const lines = readInput(day, year);
 
-type DayInputType = number[][];
+type DayInputType = string[][];
 
 // Returns the manipulated input lines
 function setup(lines: string[]): DayInputType {
-  return lines.map((line) => Array.from(line).map((c) => (c === "@" ? 1 : 0)));
+  return lines.map((line) => Array.from(line));
 }
-
-const kernel: { [y: number]: { [x: number]: number } } = {
-  "-1": { "-1": 1, 0: 1, 1: 1 },
-  "0": { "-1": 1, 0: 0, 1: 1 },
-  "1": { "-1": 1, 0: 1, 1: 1 },
-};
-
-const neighbors1D = [-1, 0, +1];
-
-const applyKernel = (
-  map: number[][],
-  x: number,
-  y: number,
-  kernel: { [y: number]: { [x: number]: number } }
-) => {
-  let sum = 0;
-  for (const i of neighbors1D)
-    for (const j of neighbors1D) {
-      if (map[y + j] === undefined || map[y + j][x + i] === undefined) continue;
-      sum += map[y + j][x + i] * kernel[j][i];
-    }
-
-  return sum;
-};
 
 function part1(map: DayInputType): Solution {
   let freeRolls = 0;
 
   for (let y = 0; y < map.length; y++) {
     for (let x = 0; x < map[y].length; x++) {
-      if (map[y][x] === 1 && applyKernel(map, x, y, kernel) < 4) freeRolls++;
+      if (map[y][x] === ".") continue;
+
+      let rolls = 0;
+      if (x > 0) {
+        if (map[y][x - 1] === "@") rolls++;
+        if (y > 0 && map[y - 1][x - 1] === "@") rolls++;
+        if (y < map.length - 1 && map[y + 1][x - 1] === "@") rolls++;
+      }
+      if (x < map[y].length - 1) {
+        if (map[y][x + 1] === "@") rolls++;
+        if (y > 0 && map[y - 1][x + 1] === "@") rolls++;
+        if (y < map.length - 1 && map[y + 1][x + 1] === "@") rolls++;
+      }
+      if (y > 0 && map[y - 1][x] === "@") rolls++;
+      if (y < map.length - 1 && map[y + 1][x] === "@") rolls++;
+
+      if (rolls < 4) freeRolls++;
     }
   }
 
@@ -56,13 +48,26 @@ function part2(map: DayInputType): Solution {
     removedRolls = false;
     for (let y = 0; y < map.length; y++) {
       for (let x = 0; x < map[y].length; x++) {
-        if (map[y][x] === 0) {
-          continue;
+        if (map[y][x] === ".") continue;
+
+        let rolls = 0;
+        if (x > 0) {
+          if (map[y][x - 1] === "@") rolls++;
+          if (y > 0 && map[y - 1][x - 1] === "@") rolls++;
+          if (y < map.length - 1 && map[y + 1][x - 1] === "@") rolls++;
         }
-        if (applyKernel(map, x, y, kernel) < 4) {
-          map[y][x] = 0;
+        if (x < map[y].length - 1) {
+          if (map[y][x + 1] === "@") rolls++;
+          if (y > 0 && map[y - 1][x + 1] === "@") rolls++;
+          if (y < map.length - 1 && map[y + 1][x + 1] === "@") rolls++;
+        }
+        if (y > 0 && map[y - 1][x] === "@") rolls++;
+        if (y < map.length - 1 && map[y + 1][x] === "@") rolls++;
+
+        if (rolls < 4) {
           freeRolls++;
           removedRolls = true;
+          map[y][x] = ".";
         }
       }
     }
