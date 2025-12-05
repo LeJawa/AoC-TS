@@ -137,8 +137,6 @@ async function main(...args: string[]) {
     return;
   }
 
-  console.log(formatTime(234.3456 * 1e9));
-
   if (isAll) {
     const years = getYearsAvailable();
 
