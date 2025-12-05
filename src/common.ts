@@ -38,7 +38,7 @@ export function formatTime(ns: number) {
     : `${Math.floor(ns / 60e9)}m${((ns / 1e9) % 60).toFixed(2)}s`;
 }
 
-export function readInput(day: number, year: number): string[] {
+export function readInput(day: number, year: number, raw = false): string[] {
   const file = path.join(
     __dirname,
     "..",
@@ -46,8 +46,12 @@ export function readInput(day: number, year: number): string[] {
     year.toString(),
     `day${day.toString().padStart(2, "0")}.txt`
   );
-  return fs
-    .readFileSync(file, "utf-8")
+
+  const fileContent = fs.readFileSync(file, "utf-8");
+
+  if (raw) return [fileContent];
+
+  return fileContent
     .split(/\r?\n/)
     .map((line) => line.trimEnd())
     .filter((line) => line !== "");
