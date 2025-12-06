@@ -98,7 +98,7 @@ async function setupDay(day: number, year: number, shouldOpen: boolean) {
   if (shouldOpen) {
     const { default: open } = await import("open");
     const url = `https://adventofcode.com/${year}/day/${day}`;
-    await open(url, { wait: true });
+    open(url, { wait: true });
     console.log(`Opened ${url}`);
   }
 }
