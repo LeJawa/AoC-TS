@@ -56,3 +56,35 @@ export function readInput(day: number, year: number, raw = false): string[] {
     .map((line) => line.trimEnd())
     .filter((line) => line !== "");
 }
+
+export async function sleep(ms: number) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+let timeOfLastFetch: bigint = process.hrtime.bigint();
+const delay = BigInt(1500 * 1e6); // 1500 ms * 1e6 = delay in nanoseconds
+
+export async function aocFetch(
+  url: string,
+  init?: {
+    headers: { Cookie: string };
+  }
+) {
+  let now = process.hrtime.bigint();
+  const earliestFetch = timeOfLastFetch + delay;
+
+  let timeoutTime = 50;
+  while (now < earliestFetch) {
+    await sleep(timeoutTime);
+    timeoutTime *= 2;
+    now = process.hrtime.bigint();
+  }
+
+  const { default: fetch } = await import("node-fetch");
+
+  return fetch(url, init).finally(() => {
+    timeOfLastFetch = process.hrtime.bigint();
+  });
+}

@@ -1,6 +1,8 @@
 import fs from "fs";
 import path from "path";
 import dotenv from "dotenv";
+import { sleep } from "./common";
+import { aocFetch } from "./common";
 dotenv.config();
 
 const [, , ...args] = process.argv;
@@ -30,7 +32,6 @@ export async function downloadInput(
   year: number,
   dest: string
 ): Promise<void> {
-  const { default: fetch } = await import("node-fetch");
   const session = process.env.AOC_SESSION;
   if (!session) {
     if (!fs.existsSync(dest)) {
@@ -41,7 +42,7 @@ export async function downloadInput(
     throw new Error("AOC_SESSION not set in .env");
   }
   const url = `https://adventofcode.com/${year}/day/${day}/input`;
-  const res = await fetch(url, {
+  const res = await aocFetch(url, {
     headers: { Cookie: `session=${session}` },
   });
   if (!res.ok) {
@@ -60,14 +61,20 @@ export async function downloadInput(
 async function setupDay(day: number, year: number, shouldOpen: boolean) {
   const inputPath = getInputPath(day, year);
   const dayFile = getDayFile(day, year);
-  // Download input (always re-download)
-  try {
-    await downloadInput(day, year, inputPath);
-    console.log(`Downloaded input for day ${day} (${year})`);
-  } catch (e) {
-    console.error(
-      `Failed to download input for day ${day}:`,
-      (e as Error).message
+  // Download input if it doesn't exist
+  if (!fs.existsSync(inputPath)) {
+    try {
+      await downloadInput(day, year, inputPath);
+      console.log(`Downloaded input for day ${day} (${year})`);
+    } catch (e) {
+      console.error(
+        `Failed to download input for day ${day}:`,
+        (e as Error).message
+      );
+    }
+  } else {
+    console.log(
+      `${path.relative(".", inputPath)} already exists, not overwritten.`
     );
   }
   // Create solution file if not exists
@@ -83,7 +90,9 @@ async function setupDay(day: number, year: number, shouldOpen: boolean) {
     fs.writeFileSync(dayFile, template);
     console.log(`Created ${dayFile}`);
   } else {
-    console.log(`${dayFile} already exists, not overwritten.`);
+    console.log(
+      `${path.relative(".", dayFile)} already exists, not overwritten.`
+    );
   }
   // Optionally open problem in browser
   if (shouldOpen) {
