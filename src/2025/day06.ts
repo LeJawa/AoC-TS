@@ -3,13 +3,13 @@ import { type Solution } from "../types";
 
 const year = 2025;
 const day = 6;
-const lines = readInput(day, year);
+const lines = readInput(day, year, true);
 
 type DayInputType = string[];
 
 // Returns the manipulated input lines
 function setup(lines: string[]): DayInputType {
-  return lines;
+  return lines[0].split("\n").filter((line) => line !== "");
 }
 
 const doOperation = (operator: string, ...numbers: number[]) => {
@@ -19,15 +19,11 @@ const doOperation = (operator: string, ...numbers: number[]) => {
 };
 
 function part1(lines: DayInputType): Solution {
-  const splitLines = lines.map((line) => {
-    return line.split(/ +/);
-  });
-
-  const numberArrays = splitLines
+  const numberArrays = lines
     .slice(0, -1)
-    .map((line) => line.map((x) => parseInt(x)));
+    .map((line) => line.split(/ +/).map((x) => parseInt(x)));
 
-  const operators = splitLines.at(-1)!;
+  const operators = lines.at(-1)!.trim().split(/ +/);
 
   let result = 0;
 
@@ -44,9 +40,38 @@ function part1(lines: DayInputType): Solution {
   return result;
 }
 
-function part2(input: DayInputType): Solution {
-  // TODO: Implement Part 2
-  return null;
+function part2(lines: DayInputType): Solution {
+  const numberLines = lines.slice(0, -1);
+
+  const operators = lines.at(-1)!.trim().split(/ +/);
+
+  let index = numberLines[0].length;
+  let opIndex = operators.length - 1;
+
+  let result = 0;
+  let partialResult: number = undefined!;
+  while (index-- > 0) {
+    const n = parseInt(
+      `${numberLines[0][index]}${numberLines[1][index]}${numberLines[2][index]}${numberLines[3][index]}`
+    );
+
+    if (index === 0) {
+      result += doOperation(operators[opIndex], partialResult, n);
+      break;
+    }
+
+    if (isNaN(n)) {
+      result += partialResult;
+      partialResult = undefined!;
+      opIndex--;
+      continue;
+    }
+
+    if (partialResult === undefined) partialResult = n;
+    else partialResult = doOperation(operators[opIndex], partialResult, n);
+  }
+
+  return result;
 }
 
 export async function main() {
