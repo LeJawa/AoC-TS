@@ -44,12 +44,8 @@ function part2(input: DayInputType): Solution {
     const newBeams: Set<number> = new Set();
     beams.forEach((beam) => {
       if (input[i][beam] === "^") {
-        if (beamCount[beam - 1] === undefined)
-          beamCount[beam - 1] = beamCount[beam];
-        else beamCount[beam - 1] += beamCount[beam];
-        if (beamCount[beam + 1] === undefined)
-          beamCount[beam + 1] = beamCount[beam];
-        else beamCount[beam + 1] += beamCount[beam];
+        beamCount[beam - 1] = (beamCount[beam - 1] ?? 0) + beamCount[beam];
+        beamCount[beam + 1] = (beamCount[beam + 1] ?? 0) + beamCount[beam];
 
         beamCount[beam] = 0;
         newBeams.add(beam - 1);
