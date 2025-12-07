@@ -141,3 +141,5 @@ export async function main() {
   const { result: answer2, time: time2 } = await timeIt(() => part2(dayInput));
   console.log(` > Part 2:`, answer2, `(${time2})`);
 }
+
+export { setup, part1, part2 };

@@ -87,4 +87,4 @@ export async function main() {
   console.log(` > Part 2:`, answer2, `(${time2})`);
 }
 
-export { part1, part2 };
+export { setup, part1, part2 };
