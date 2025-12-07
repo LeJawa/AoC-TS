@@ -35,8 +35,32 @@ function part1(input: DayInputType): Solution {
 }
 
 function part2(input: DayInputType): Solution {
-  // TODO: Implement Part 2
-  return null;
+  const start = input[0].indexOf("S");
+  let beams = new Set([start]);
+
+  let beamCount: { [b: number]: number } = { [start]: 1 };
+
+  for (let i = 1; i < input.length; i++) {
+    const newBeams: Set<number> = new Set();
+    beams.forEach((beam) => {
+      if (input[i][beam] === "^") {
+        if (beamCount[beam - 1] === undefined)
+          beamCount[beam - 1] = beamCount[beam];
+        else beamCount[beam - 1] += beamCount[beam];
+        if (beamCount[beam + 1] === undefined)
+          beamCount[beam + 1] = beamCount[beam];
+        else beamCount[beam + 1] += beamCount[beam];
+
+        beamCount[beam] = 0;
+        newBeams.add(beam - 1);
+        newBeams.add(beam + 1);
+      } else newBeams.add(beam);
+    });
+
+    beams = newBeams;
+  }
+
+  return Object.values(beamCount).reduce((sum, curr) => sum + curr, 0);
 }
 
 export async function main() {
@@ -52,4 +76,4 @@ export async function main() {
   console.log(` > Part 2:`, answer2, `(${time2})`);
 }
 
-export { part1, part2 };
+export { setup, part1, part2 };
