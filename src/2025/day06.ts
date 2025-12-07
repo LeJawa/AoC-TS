@@ -3,7 +3,9 @@ import { type Solution } from "../types";
 
 const year = 2025;
 const day = 6;
-const lines = readInput(day, year, true);
+
+const IS_RAW_INPUT = true;
+const lines = readInput(day, year, IS_RAW_INPUT);
 
 type DayInputType = string[];
 
@@ -87,4 +89,4 @@ export async function main() {
   console.log(` > Part 2:`, answer2, `(${time2})`);
 }
 
-export { setup, part1, part2 };
+export { setup, part1, part2, IS_RAW_INPUT };

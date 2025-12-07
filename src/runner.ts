@@ -78,7 +78,9 @@ async function runDay(day: number, year: number, times: number) {
 
       if (importError) throw new Error("Error with imports");
 
-      const lines = readInput(day, year);
+      const isRawInput = !!dayModule.IS_RAW_INPUT;
+
+      const lines = readInput(day, year, isRawInput);
       console.log(`Day ${day}:`);
 
       const { result: dayInput, time: time0 } = await timeIt(
