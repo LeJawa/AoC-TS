@@ -155,7 +155,9 @@ function part2({
   pageAfterRules,
 }: DayInputType): Solution {
   let wrongMiddlePageSum = 0;
-  updates.forEach((update) => {
+  const updatesClone = structuredClone(updates);
+
+  updatesClone.forEach((update) => {
     const middlePage = checkUpdate(update, pageAfterRules, pageBeforeRules);
     if (middlePage === 0) {
       wrongMiddlePageSum += fixUpdate(update, pageAfterRules, pageBeforeRules);

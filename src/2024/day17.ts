@@ -107,8 +107,6 @@ const runAllInst = (aStart: bigint, inst: number[]) => {
 };
 
 function part1({ registers: { a }, inst }: DayInputType): Solution {
-  console.log(inst);
-
   return runAllInst(a, inst).join(",");
 }
 
