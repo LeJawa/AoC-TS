@@ -3,7 +3,7 @@ import path from "path";
 import dotenv from "dotenv";
 import { sleep } from "./common";
 import { aocFetch } from "./common";
-dotenv.config();
+dotenv.config({ quiet: true });
 
 const [, , ...args] = process.argv;
 const templatePath = path.join(__dirname, "..", "src", "template", "day.ts");
@@ -62,7 +62,7 @@ async function setupDay(day: number, year: number, shouldOpen: boolean) {
   const inputPath = getInputPath(day, year);
   const dayFile = getDayFile(day, year);
   // Download input if it doesn't exist
-  if (!fs.existsSync(inputPath)) {
+  if (!fs.existsSync(inputPath) || fs.readFileSync(inputPath, "utf-8") === "") {
     try {
       await downloadInput(day, year, inputPath);
       console.log(`Downloaded input for day ${day} (${year})`);

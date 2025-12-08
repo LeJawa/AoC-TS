@@ -1,5 +1,5 @@
 import { readInput, timeIt } from "../common";
-import { TupleSet } from "../lib/collections";
+import { TupleSet2D } from "../lib/collections";
 import { type Solution } from "../types";
 
 const year = 2024;
@@ -82,14 +82,14 @@ const getAreaPerimeter = (
   y0: number,
   map: string[],
   size: number,
-  visited: TupleSet
+  visited: TupleSet2D
 ) => {
-  const queue: number[][] = [[x0, y0]];
+  const queue: [number, number][] = [[x0, y0]];
   const outside = new Set<string>();
   let area = 0;
 
   while (queue.length > 0) {
-    const cell: number[] = queue.pop()!;
+    const cell: [number, number] = queue.pop()!;
 
     if (visited.has(cell)) continue;
 
@@ -143,7 +143,7 @@ const getAreaPerimeter = (
 
 function part1(map: DayInputType): Solution {
   const size = map.length;
-  const visited = new TupleSet();
+  const visited = new TupleSet2D();
   let price = 0;
 
   map.forEach((row, y) => {
@@ -165,7 +165,7 @@ function part1(map: DayInputType): Solution {
 
 function part2(map: DayInputType): Solution {
   const size = map.length;
-  const visited = new TupleSet();
+  const visited = new TupleSet2D();
   let price = 0;
 
   map.forEach((row, y) => {

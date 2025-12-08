@@ -1,7 +1,10 @@
-export class TupleSet {
+/**
+ * A set collection that accepts arrays of 2 numbers
+ */
+export class TupleSet2D {
   data = new Map<number, Set<number>>();
 
-  add([first, second]: number[]): TupleSet {
+  add([first, second]: [number, number]): TupleSet2D {
     if (!this.data.has(first)) {
       this.data.set(first, new Set());
     }
@@ -10,11 +13,11 @@ export class TupleSet {
     return this;
   }
 
-  has([first, second]: number[]) {
+  has([first, second]: [number, number]) {
     return this.data.has(first) && this.data.get(first)?.has(second);
   }
 
-  delete([first, second]: number[]) {
+  delete([first, second]: [number, number]) {
     if (!this.data.has(first) || !this.data.get(first)?.has(second))
       return false;
 
