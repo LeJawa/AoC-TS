@@ -123,7 +123,7 @@ function part1(boxes: DayInputType): Solution {
 
   const sorted = graphs.toSorted((a, b) => b.size - a.size);
   console.log(sorted.slice(0, 10));
-  return sorted[0].size * sorted[1].size * sorted[3].size;
+  return sorted[0].size * sorted[1].size * sorted[2].size;
 }
 
 function part2(boxes: DayInputType): Solution {
