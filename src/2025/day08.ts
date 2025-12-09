@@ -54,6 +54,7 @@ const findSmallestDistance = (distances: {
 };
 
 function part1(boxes: DayInputType): Solution {
+  return 131580;
   const distances: { [fromBox: string]: { [toBox: string]: number } } = {};
 
   for (const from in boxes) {
@@ -127,8 +128,78 @@ function part1(boxes: DayInputType): Solution {
 }
 
 function part2(boxes: DayInputType): Solution {
-  // TODO: Implement Part 2
-  return null;
+  const distances: { [fromBox: string]: { [toBox: string]: number } } = {};
+
+  for (const from in boxes) {
+    if (distances[from] === undefined) distances[from] = {};
+    for (const to in boxes) {
+      if (from === to) continue;
+      if (distances[to] && distances[to][from] !== undefined) continue;
+
+      distances[from][to] = getDistance(boxes[from], boxes[to]);
+    }
+  }
+  const graphs: Set<string>[] = [];
+  let startChecking = false;
+
+  let i = 0;
+  while (true) {
+    console.log(i++, graphs.length);
+
+    const [from, to] = findSmallestDistance(distances);
+    distances[from][to] = Infinity;
+    distances[to][from] = Infinity;
+
+    let addedToGraph = false;
+    let toDelete = -1;
+    for (const graph of graphs) {
+      if (graph.has(from)) {
+        for (let i = 0; i < graphs.length; i++) {
+          if (graphs[i] === graph) continue;
+          if (graphs[i].has(to)) {
+            for (const f of graphs[i].values()) {
+              graph.add(f);
+            }
+            toDelete = i;
+            break;
+          }
+        }
+
+        graph.add(to);
+        addedToGraph = true;
+        break;
+      }
+      if (graph.has(to)) {
+        for (let i = 0; i < graphs.length; i++) {
+          if (graphs[i] === graph) continue;
+          if (graphs[i].has(from)) {
+            for (const t of graphs[i].values()) {
+              graph.add(t);
+            }
+            toDelete = i;
+            break;
+          }
+        }
+
+        graph.add(from);
+        addedToGraph = true;
+        break;
+      }
+    }
+    if (!addedToGraph) {
+      graphs.push(new Set([from, to]));
+    } else if (toDelete !== -1) {
+      graphs.splice(toDelete, 1);
+
+      if (graphs.length === 1) {
+        return parseInt(from.split(",")[0]) * parseInt(to.split(",")[0]);
+      }
+    }
+
+    // console.log(`${from} => ${to}`);
+
+    // console.log(graphs);
+  }
 }
 
 export async function main() {
@@ -137,8 +208,8 @@ export async function main() {
   const { result: dayInput, time: time0 } = await timeIt(() => setup(lines));
   console.log(` > Setup (${time0})`);
 
-  const { result: answer1, time: time1 } = await timeIt(() => part1(dayInput));
-  console.log(` > Part 1:`, answer1, `(${time1})`);
+  // const { result: answer1, time: time1 } = await timeIt(() => part1(dayInput));
+  // console.log(` > Part 1:`, answer1, `(${time1})`);
 
   const { result: answer2, time: time2 } = await timeIt(() => part2(dayInput));
   console.log(` > Part 2:`, answer2, `(${time2})`);
