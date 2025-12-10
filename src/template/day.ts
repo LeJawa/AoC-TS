@@ -7,10 +7,10 @@ const day = 1;
 const IS_RAW_INPUT = false; // set to true if lines is raw input
 const lines = readInput(day, year, IS_RAW_INPUT);
 
-type DayInputType = string[];
+type DayInputType = ReturnType<typeof setup>;
 
 // Returns the manipulated input lines
-function setup(lines: string[]): DayInputType {
+function setup(lines: string[]) {
   // TODO: Implement setup
   return [];
 }
