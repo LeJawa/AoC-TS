@@ -19,7 +19,7 @@
       "name": "Debug runner",
       "program": "${workspaceFolder}/dist/runner.js",
       "outFiles": ["${workspaceFolder}/dist/**/*.js"],
-      "args": ["9", "2025"]
+      "args": ["10", "2025"]
     }
   ]
 }
