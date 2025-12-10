@@ -87,7 +87,7 @@ const addToShortestDistances = (
 
 function part1(boxes: DayInputType): Solution {
   // return 131580;
-  const N = 10;
+  const N = 1000;
   const distances: { [fromBox: string]: { [toBox: string]: number } } = {};
   let shortestDistances: Distance[] = [];
 
@@ -188,7 +188,7 @@ function part2(boxes: DayInputType): Solution {
 
   shortestDistances.sort((a, b) => a.value - b.value);
 
-  const graphs: Set<string>[] = [];
+  const graphs: Set<string>[] = Object.keys(boxes).map((b) => new Set([b]));
 
   for (let i = 0; true; i++) {
     const { nodeA, nodeB } = shortestDistances[i];
