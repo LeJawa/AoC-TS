@@ -120,6 +120,45 @@ export function permutationsWithReplacement<T>(
   }
 }
 
+// https://github.com/N8Brooks/combinatorics/blob/main/combinations_with_replacement.ts
+export function* combinationsWithReplacement<T>(
+  iterable: Iterable<T>,
+  r: number
+): Generator<T[]> {
+  if (!Number.isInteger(r) || r < 0) {
+    throw RangeError("r must be a non-negative integer");
+  }
+  const pool = [...iterable];
+  const n = pool.length;
+  if (n === 0 && r > 0) {
+    return;
+  }
+  const indices = new Uint32Array(r);
+  yield Array(r).fill(pool[0]);
+  while (true) {
+    let i: number;
+    loop: {
+      for (i = r - 1; i >= 0; i--) {
+        if (indices[i] !== n - 1) {
+          break loop;
+        }
+      }
+      return;
+    }
+    const result: T[] = Array(r);
+    for (let j = 0; j < i; j++) {
+      result[j] = pool[indices[j]];
+    }
+    const index = indices[i] + 1;
+    const element = pool[index];
+    for (let j = i; j < r; j++) {
+      indices[j] = index;
+      result[j] = element;
+    }
+    yield result;
+  }
+}
+
 export function max(...numbers: number[]): number {
   if (numbers.length === 0) return undefined!;
   let max = numbers[0];

@@ -1,5 +1,5 @@
 import { readInput, timeIt } from "../common";
-import { permutationsWithReplacement } from "../lib/math";
+import { combinationsWithReplacement } from "../lib/math";
 import { type Solution } from "../types";
 
 const year = 2025;
@@ -34,22 +34,20 @@ function part1({ machines, buttons }: DayInputType): Solution {
   let buttonPresses = 0;
 
   for (let i = 0; i < machines.length; i++) {
-    console.log(i);
-
     let minPresses = -1;
     const m: boolean[] = Array(machines[i].length).fill(false);
 
     for (let k = 1; minPresses < 1; k++) {
-      const permutations = permutationsWithReplacement(buttons[i], k);
+      const combinations = combinationsWithReplacement(buttons[i], k);
 
-      for (const p of permutations) {
+      for (const c of combinations) {
         m.fill(false);
-        for (const b of p) {
+        for (const b of c) {
           b.forEach((i) => {
             m[i] = !m[i];
           });
         }
-        if (m.every((l) => l)) {
+        if (m.every((l, light) => l === machines[i][light])) {
           minPresses = k;
           break;
         }
@@ -61,9 +59,33 @@ function part1({ machines, buttons }: DayInputType): Solution {
   return buttonPresses;
 }
 
-function part2(input: DayInputType): Solution {
-  // TODO: Implement Part 2
-  return null;
+function part2({ buttons, energy }: DayInputType): Solution {
+  let buttonPresses = 0;
+
+  for (let i = 0; i < energy.length; i++) {
+    let minPresses = -1;
+    const m: number[] = Array(energy[i].length).fill(0);
+
+    for (let k = 1; minPresses < 1; k++) {
+      const combinations = combinationsWithReplacement(buttons[i], k);
+
+      for (const c of combinations) {
+        m.fill(0);
+        for (const b of c) {
+          b.forEach((i) => {
+            m[i] += 1;
+          });
+        }
+        if (m.every((l, light) => l === energy[i][light])) {
+          minPresses = k;
+          break;
+        }
+      }
+    }
+
+    buttonPresses += minPresses;
+  }
+  return buttonPresses;
 }
 
 export async function main() {
