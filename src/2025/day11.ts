@@ -128,7 +128,7 @@ function part2(graph: DayInputType): Solution {
     getPathCount(graph, "svr", "fft", fftAscendants) *
     getPathCount(graph, "fft", "dac", dacAscendants) *
     getPathCount(graph, "dac", "out", outAscendants)
-  );
+  ); // ~ 30 seconds
 }
 
 export async function main() {
